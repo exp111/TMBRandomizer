@@ -174,7 +174,8 @@
 
     let randomButton = document.getElementById("randomize");
     randomButton.onclick = () => {
-        let setup = Setup.Randomize();
+        let solo = document.getElementById("solo");
+        let setup = Setup.Randomize(solo.checked);
         let tyrant = document.getElementById("result-tyrant");
         tyrant.textContent = setup.Tyrant.Name;
         let encounters = document.getElementById("result-encounters");
