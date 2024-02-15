@@ -6,6 +6,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Too Many Bones Randomizer</title>
 </head>
+<style>
+    #result-tyrant-image {
+        width: 256px;
+        height: 256px;
+    }
+    #result .header {
+        font-weight: bold;
+        font-size: 2rem;
+    }
+</style>
 <body>
 <div id="addons">
     <input type="checkbox" id="base" checked="checked" />
@@ -19,10 +29,17 @@
 </div>
 <button id="randomize">Randomize</button>
 <div id="result">
-    <div id="result-tyrant"></div>
+    <div id="result-tyrant">
+        <div class="header">Tyrant</div>
+        <!-- TODO: default img -->
+        <img id="result-tyrant-image" />
+        <div id="result-tyrant-name"></div>
+    </div>
+    <div class="header">Encounters</div>
     <div id="result-encounters"></div>
 </div>
 <script>
+    //TODO: gearloc randomizer?
     const owned = {"base": true, "40d": false};
     const names = {
         "base": "Base Game",
@@ -49,6 +66,7 @@
 
     class Tyrant {
         SetID = "";
+        ID = "";
         Name = "";
         Progress = 0;
         Days = 0;
@@ -56,6 +74,8 @@
         Cards = [];
 
         constructor(setID, name, progress, days, encounters) {
+            this.SetID = setID;
+            this.ID = name.toLowerCase().replaceAll(" ", "-");
             this.Name = name;
             this.Progress = progress;
             this.Days = days;
@@ -65,7 +85,7 @@
 
         buildCards() {
             for (let i = 0; i < this.Encounters; i++) {
-                this.Cards.push(new Encounter("base", this.Name, `${i + 1}/${this.Encounters}`));
+                this.Cards.push(new Encounter(this.SetID, this.Name, `${i + 1}/${this.Encounters}`));
             }
         }
     }
@@ -176,12 +196,14 @@
     randomButton.onclick = () => {
         let solo = document.getElementById("solo");
         let setup = Setup.Randomize(solo.checked);
-        let tyrant = document.getElementById("result-tyrant");
+        let tyrantImg = document.getElementById("result-tyrant-image");
+        tyrantImg.src = `assets/img/tyrants/${setup.Tyrant.ID}.png`;
+        let tyrant = document.getElementById("result-tyrant-name");
         tyrant.textContent = setup.Tyrant.Name;
         let encounters = document.getElementById("result-encounters");
         encounters.innerHTML = "";
         for (let e of setup.Encounters) {
-            let el = document.createElement("p");
+            let el = document.createElement("div");
             el.textContent = e.toString();
             encounters.appendChild(el);
         }
