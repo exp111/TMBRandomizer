@@ -9,26 +9,35 @@
 </head>
 <body>
 <div id="addons">
-    <input type="checkbox" id="base" checked="checked" />
-    <label for="base">Base</label>
-    <input type="checkbox" id="40d" />
-    <label for="40d">40 Days</label>
+    <div>
+        <input type="checkbox" id="base" checked="checked"/>
+        <label for="base">Base</label>
+    </div>
+    <div>
+        <input type="checkbox" id="40d"/>
+        <label for="40d">40 Days</label>
+    </div>
 </div>
 <div id="options">
-    <input type="checkbox" id="solo" />
-    <label for="solo">Solo</label>
+    <div>
+        <input type="checkbox" id="solo"/>
+        <label for="solo">Solo</label>
+    </div>
 </div>
 <button id="randomize">Randomize</button>
-<div id="result">
-    <div id="result-tyrant">
+<div id="results">
+    <div id="tyrant">
         <div class="header">Tyrant</div>
         <!-- TODO: default img -->
-        <img id="result-tyrant-image" />
+        <img id="result-tyrant-image"/>
         <div id="result-tyrant-name"></div>
     </div>
-    <div class="header">Encounters</div>
-    <div id="result-encounters"></div>
+    <div id="encounters">
+        <div class="header">Encounters</div>
+        <div id="result-encounters"></div>
+    </div>
 </div>
+</body>
 <script src="assets/js/tmb.js"></script>
 <script>
     //TODO: gearloc randomizer?
@@ -61,5 +70,4 @@
         }
     }
 </script>
-</body>
 </html>
