@@ -2,7 +2,8 @@ const names = {
     "base": "Base Set",
     "40d": "40 Days",
     "aot": "Age of Tyranny",
-    //TODO: more: RoT, AoS, UT, UB, 40w, 40c
+    "rot": "Rage of Tyranny",
+    //TODO: more: AoS, UT, UB, 40w, 40c
 }
 
 class Encounter {
@@ -70,10 +71,13 @@ const tyrants = [
 const cards = {
     "base-d1": [new Encounter("base", "Special", "001")],
     "aot-d1": buildCards("aot", "Special", 7),
+    "rot-d1": buildCards("rot", "Special", 4),
     "base-d2": [new Encounter("base", "Special", "002")],
     "aot-d2": buildCards("aot", "Special", 7, 8),
+    "rot-d2": buildCards("rot", "Special", 4, 9),
     "base-d3": [new Encounter("base", "Special", "003")],
     "aot-d3": buildCards("aot", "Special", 7, 15),
+    "rot-d3": buildCards("rot", "Special", 4, 17),
     "base": buildCards("base", "General", 30),
     "base-solo": buildCards("base", "Solo", 12),
     "40d": buildCards("40d", "General", 24),
