@@ -77,12 +77,10 @@ const cards = {
     "d3": [
         new Encounter("base", "Special", "003"),
     ],
-    "general": [
-        ...buildGeneralCards("base", 30)
-    ],
-    "generalSolo": [
-        ...buildGeneralCards("base", 12, true)
-    ]
+    "base": buildGeneralCards("base", 30),
+    "base-solo": buildGeneralCards("base", 12, true),
+    "40d": buildGeneralCards("40d", 24),
+    "40d-solo": buildGeneralCards("40d", 12, true),
 };
 
 class Setup {
@@ -94,7 +92,7 @@ class Setup {
         this.Encounters = encounters;
     }
 
-    static Randomize(solo) {
+    static Randomize(owned, solo) {
         function randomEl(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
@@ -124,10 +122,17 @@ class Setup {
         }
 
         let amount = tyrant.Days - 3;
-        let arr = solo ? cards["generalSolo"] : cards["general"];
+        let pool = [];
+        let suffix = solo ? "-solo" : "";
+        for (let set of Object.keys(owned)) {
+            let s = `${set}${suffix}`;
+            if (owned[set] && cards.hasOwnProperty(s)) {
+                pool.push(...cards[s]);
+            }
+        }
         let encounters = [];
         for (let i = 0; i < amount; i++) {
-            let card = randomEl(arr);
+            let card = randomEl(pool);
             encounters.push(card);
         }
         for (let card of tyrant.Cards) {

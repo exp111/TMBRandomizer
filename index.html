@@ -47,7 +47,7 @@
     let randomButton = document.getElementById("randomize");
     randomButton.onclick = () => {
         let solo = document.getElementById("solo");
-        let setup = Setup.Randomize(solo.checked);
+        let setup = Setup.Randomize(owned, solo.checked);
         let tyrantImg = document.getElementById("result-tyrant-image");
         tyrantImg.src = `assets/img/tyrants/${setup.Tyrant.ID}.png`;
         let tyrant = document.getElementById("result-tyrant-name");
