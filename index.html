@@ -23,6 +23,12 @@
         <input type="checkbox" id="solo"/>
         <label for="solo">Solo</label>
     </div>
+    <div>
+        <label for="force-tyrant">Tyrant:</label>
+        <select id="force-tyrant">
+            <option value="" selected>Random</option>
+        </select>
+    </div>
 </div>
 <button id="randomize">Randomize</button>
 <div id="results">
@@ -47,16 +53,32 @@
         owned[id] = val;
     }
 
+    // hook
     let addons = document.getElementById("addons");
     for (let addon of addons.children) {
-        addon.onchange = () => setOwned(addon.id, addon.checked);
-        addon.onchange(); // sync dict with dom
+        let check = addon.getElementsByTagName("input");
+        if (check.length == 0) {
+            continue;
+        }
+        check = check[0];
+        check.onchange = () => setOwned(check.id, check.checked);
+        check.onchange(); // sync dict with dom
+    }
+    // sync tyrants with dropdown
+    let tyr = document.getElementById("force-tyrant");
+    for (let tyrant of tyrants) {
+        let opt = new Option(tyrant.Name, tyrant.ID);
+        tyr.appendChild(opt);
     }
 
     let randomButton = document.getElementById("randomize");
     randomButton.onclick = () => {
-        let solo = document.getElementById("solo");
-        let setup = Setup.Randomize(owned, solo.checked);
+        let solo = document.getElementById("solo").checked;
+        let tyr = document.getElementById("force-tyrant");
+        let selectedTyrant = tyr.selectedOptions.length > 0 ? tyr.selectedOptions[0].value : null;
+        if (!selectedTyrant)
+            selectedTyrant = null;
+        let setup = Setup.Randomize(owned, solo, selectedTyrant);
         let tyrantImg = document.getElementById("result-tyrant-image");
         tyrantImg.src = `assets/img/tyrants/${setup.Tyrant.ID}.png`;
         let tyrant = document.getElementById("result-tyrant-name");

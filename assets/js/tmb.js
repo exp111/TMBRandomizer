@@ -95,7 +95,7 @@ class Setup {
         this.Encounters = encounters;
     }
 
-    static Randomize(owned, solo) {
+    static Randomize(owned, solo, tyrantID = null) {
         function randomEl(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
@@ -117,8 +117,12 @@ class Setup {
             }
         }
 
-        // fetch a random tyrant
-        let tyrant = randomEl(tyrants);
+        // get the tyrant
+        let tyrant = null;
+        if (tyrantID == null) // fetch a random tyrant
+            tyrant = randomEl(tyrants);
+        else
+            tyrant = tyrants.find(t => t.ID == tyrantID);
         // build pool of cards
         let tyrantPool = tyrant.Cards;
         let pool = [];
