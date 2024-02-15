@@ -37,9 +37,17 @@
             <option value="" selected>Random</option>
         </select>
     </div>
+    <div>
+        <label for="num-players">Players:</label>
+        <input id="num-players" type="number" min="1" max="4" value="1"/>
+    </div>
 </div>
 <button id="randomize">Randomize</button>
 <div id="results">
+    <div id="gearloc">
+        <div class="header">Gearlocs</div>
+        <div id="gearlocs"></div>
+    </div>
     <div id="tyrant">
         <div class="header">Tyrant</div>
         <!-- TODO: default img -->
@@ -54,7 +62,7 @@
 </body>
 <script src="assets/js/tmb.js"></script>
 <script>
-    //TODO: gearloc randomizer?
+    //TODO: sync gearloc/tyrants from js to DOM
     const owned = {};
 
     function setOwned(id, val) {
@@ -82,20 +90,37 @@
     let randomButton = document.getElementById("randomize");
     randomButton.onclick = () => {
         let solo = document.getElementById("solo").checked;
+        let numPlayers = Math.max(Math.min(document.getElementById("num-players").value, 4), 1);
         let tyr = document.getElementById("force-tyrant");
         let selectedTyrant = tyr.selectedOptions.length > 0 ? tyr.selectedOptions[0].value : null;
         if (!selectedTyrant)
             selectedTyrant = null;
-        let setup = Setup.Randomize(owned, solo, selectedTyrant);
+        let setup = Setup.Randomize(owned, solo, numPlayers, selectedTyrant);
         if (setup.Error) {
             alert(`Error while creating encounters: ${setup.Error}`);
         } else {
+            // Gearlocs
+            let gearlocs = document.getElementById("gearlocs");
+            gearlocs.innerHTML = ""; // clear
+            for (let gearloc of setup.Gearlocs) {
+                let div = document.createElement("div");
+                let img = document.createElement("img");
+                img.src = `assets/img/gearlocs/${gearloc.ID}.png`;
+                div.appendChild(img);
+                let name = document.createElement("div");
+                name.classList.add("name");
+                name.textContent = gearloc.Name;
+                div.appendChild(name);
+                gearlocs.append(div);
+            }
+            // Tyrant
             let tyrantImg = document.getElementById("result-tyrant-image");
             tyrantImg.src = `assets/img/tyrants/${setup.Tyrant.ID}.png`;
             let tyrant = document.getElementById("result-tyrant-name");
             tyrant.textContent = setup.Tyrant.Name;
+            // Encounters
             let encounters = document.getElementById("result-encounters");
-            encounters.innerHTML = "";
+            encounters.innerHTML = ""; // clear
             for (let e of setup.Encounters) {
                 let el = document.createElement("div");
                 el.textContent = e.toString();

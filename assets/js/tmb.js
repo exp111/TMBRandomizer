@@ -22,6 +22,17 @@ class Encounter {
     }
 }
 
+class Gearloc {
+    SetID = "";
+    ID = "";
+    Name = "";
+
+    constructor(setID, name) {
+        this.SetID = setID;
+        this.ID = name.toLowerCase().replaceAll(" ", "-");
+        this.Name = name;
+    }
+}
 class Tyrant {
     SetID = "";
     ID = "";
@@ -58,6 +69,13 @@ function buildCards(setID, type, num, start = 1) {
     return res;
 }
 
+//TODO: move into class/scope
+const gearlocs = [
+  new Gearloc("base", "Patches"),
+  new Gearloc("base", "Picket"),
+  new Gearloc("base", "Boomer"),
+  new Gearloc("base", "Tantrum"),
+];
 const tyrants = [
     //TODO: aos
     new Tyrant("base", "Duster", 10, 13, 3),
@@ -88,17 +106,19 @@ const cards = {
 };
 
 class Setup {
+    Gearlocs = null;
     Tyrant = null;
     Encounters = null;
     Error = null;
 
-    constructor(tyrant, encounters, error) {
+    constructor(gearlocs, tyrant, encounters, error) {
+        this.Gearlocs = gearlocs;
         this.Tyrant = tyrant;
         this.Encounters = encounters;
         this.Error = error;
     }
 
-    static Randomize(owned, solo, tyrantID = null) {
+    static Randomize(owned, solo, players, tyrantID = null) {
         function randomEl(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
@@ -124,6 +144,14 @@ class Setup {
             }
         }
 
+        //TODO: get gearloc/tyrant pool + check for empty arrs
+        // get the gearlocs
+        let gearlocPool = [...gearlocs];
+        let selectedGearlocs = [];
+        if (gearlocPool.length < players)
+            return new Setup(null, null, null, `Too few gearlocs for this player count (${players}).`);
+        for (let i = 0; i < players; i++)
+            selectedGearlocs.push(takeRandomEl(gearlocPool)); // fetch a random gearloc
         // get the tyrant
         let tyrant = null;
         if (tyrantID == null) // fetch a random tyrant
@@ -163,7 +191,7 @@ class Setup {
         for (let i = 0; i < 3; i++) {
             let pool = day13Pool[i];
             if (pool.length == 0)
-                return new Setup(null, null, "Not enough day 1-3 encounters (needs at least 1 per day).");
+                return new Setup(null, null, null, "Not enough day 1-3 encounters (needs at least 1 per day).");
             let card = takeRandomEl(pool);
             first.push(card);
         }
@@ -173,7 +201,7 @@ class Setup {
         let encounters = [];
         for (let i = 0; i < amount; i++) {
             if (encounterPool.length == 0) {
-                return new Setup(null, null, `Not enough regular encounter (at least ${amount}).`);
+                return new Setup(null, null, null, `Not enough regular encounter (at least ${amount}).`);
             }
             let card = takeRandomEl(encounterPool);
             encounters.push(card);
@@ -184,6 +212,6 @@ class Setup {
         shuffleArr(encounters);
         // add the cards for day 1-3 to the front
         encounters.unshift(...first);
-        return new Setup(tyrant, encounters);
+        return new Setup(selectedGearlocs, tyrant, encounters);
     }
 }

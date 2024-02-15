@@ -11,6 +11,9 @@ body {
     justify-content: center;
     gap: 1em;
 }
+#num-players {
+    width: 3em;
+}
 #randomize {
     width: 100%;
     height: 5%;
@@ -23,9 +26,19 @@ body {
 #results > div {
     margin: auto;
 }
-#tyrant {
+#gearloc, #tyrant {
     display: flex;
     flex-direction: column;
+    text-align: center;
+}
+#gearlocs {
+    display: flex;
+    justify-content: center;
+}
+/*TODO: keep same width? */
+#gearlocs img {
+    margin: auto;
+    width: 40%;
 }
 #result-tyrant-image {
     max-width: 80%;
@@ -38,9 +51,6 @@ body {
     text-align: center;
     font-weight: bold;
     font-size: 2rem;
-}
-#result-tyrant-name {
-    text-align: center;
 }
 #result-encounters {
     font-size: 1.2em;
