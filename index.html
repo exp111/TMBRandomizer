@@ -9,37 +9,9 @@
 </head>
 <body>
 <div id="addons">
-    <div id="extensions">
-        <div>
-            <input type="checkbox" id="base" checked="checked"/>
-            <label for="base">Base</label>
-        </div>
-        <div>
-            <input type="checkbox" id="40d"/>
-            <label for="40d">40 Days</label>
-        </div>
-        <div>
-            <input type="checkbox" id="aot"/>
-            <label for="aot">Age of Tyranny</label>
-        </div>
-        <div>
-            <input type="checkbox" id="rot"/>
-            <label for="rot">Rage of Tyranny</label>
-        </div>
+    <div id="addons-gameplay">
     </div>
-    <div id="gearlocs">
-        <div>
-            <input type="checkbox" id="ghillie"/>
-            <label for="ghillie">Ghillie</label>
-        </div>
-        <div>
-            <input type="checkbox" id="nugget"/>
-            <label for="nugget">Nugget</label>
-        </div>
-        <div>
-            <input type="checkbox" id="tink"/>
-            <label for="tink">Tink</label>
-        </div>
+    <div id="addons-gearlocs">
     </div>
 </div>
 <div id="options">
@@ -79,6 +51,29 @@
 <script src="assets/js/tmb.js"></script>
 <script>
     const owned = {};
+
+    function createBox(id, text, checked) {
+        let div = document.createElement("div");
+        let check = document.createElement("input");
+        check.type = "checkbox";
+        check.id = id;
+        check.checked = checked;
+        let label = document.createElement("label");
+        label.htmlFor = id;
+        label.textContent = text;
+        div.appendChild(check);
+        div.appendChild(label);
+        return div;
+    }
+    let gameplayAdd = document.getElementById("addons-gameplay");
+    for (let addon of gameplayAddons) {
+        gameplayAdd.appendChild(createBox(addon, names[addon], addon == "base"));
+    }
+
+    let gearlocAdd = document.getElementById("addons-gearlocs");
+    for (let addon of gearlocAddons) {
+        gearlocAdd.appendChild(createBox(addon, gearlocs.find(g => g.ID == addon).Name, false));
+    }
 
     function refresh() {
         let available = getAvailableTyrants(owned);

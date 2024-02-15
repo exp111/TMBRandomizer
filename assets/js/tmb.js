@@ -6,6 +6,13 @@ const names = {
     //TODO: more: AoS, UT, UB, 40w, 40c
 }
 
+const gameplayAddons = [
+    "base", "40d", "aot", "rot"
+];
+const gearlocAddons = [
+    "ghillie", "nugget", "tink"
+];
+
 class Encounter {
     SetID = "";
     Type = "";
