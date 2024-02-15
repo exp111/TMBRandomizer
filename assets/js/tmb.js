@@ -96,8 +96,11 @@ class Setup {
 
     static Randomize(owned, solo, tyrantID = null) {
         function randomEl(arr) {
-            //TODO: remove
             return arr[Math.floor(Math.random() * arr.length)];
+        }
+        function takeRandomEl(arr) {
+            let index = Math.floor(Math.random() * arr.length);
+            return arr.splice(index, 1)[0];
         }
 
         function shuffleArr(array) {
@@ -124,7 +127,7 @@ class Setup {
         else
             tyrant = tyrants.find(t => t.ID == tyrantID);
         // build pool of cards
-        let tyrantPool = tyrant.Cards;
+        let tyrantPool = [...tyrant.Cards];
         let day13Pool = [];
         let encounterPool = [];
         let suffix = solo ? "-solo" : "";
@@ -157,7 +160,7 @@ class Setup {
             let pool = day13Pool[i];
             if (pool.length == 0)
                 return new Setup(null, null, "Not enough day 1-3 encounters (needs at least 1 per day).");
-            let card = randomEl(pool);
+            let card = takeRandomEl(pool);
             first.push(card);
         }
 
@@ -165,7 +168,10 @@ class Setup {
         let amount = tyrant.Days - 3;
         let encounters = [];
         for (let i = 0; i < amount; i++) {
-            let card = randomEl(encounterPool);
+            if (encounterPool.length == 0) {
+                return new Setup(null, null, `Not enough regular encounter (at least ${amount}).`);
+            }
+            let card = takeRandomEl(encounterPool);
             encounters.push(card);
         }
         // add all available tyrant encounters for this tyrant
