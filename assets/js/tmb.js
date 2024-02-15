@@ -47,18 +47,18 @@ class Tyrant {
     }
 }
 
-function buildGeneralCards(setID, num, solo = false) {
+function buildCards(setID, type, num, start = 1) {
     let res = [];
-    let type = solo ? "Solo" : "General";
-    for (let i = 0; i < num; i++) {
-        let num = (i + 1).toString().padStart(3, "0");
+    let end = start + num;
+    for (let i = start; i < end; i++) {
+        let num = i.toString().padStart(3, "0");
         res.push(new Encounter(setID, type, num));
     }
     return res;
 }
 
 const tyrants = [
-    //TODO: 40 days?
+    //TODO: aos
     new Tyrant("base", "Duster", 10, 13, 3),
     new Tyrant("base", "Mulmesh", 6, 9, 1),
     new Tyrant("base", "Marrow", 10, 12, 2),
@@ -68,19 +68,16 @@ const tyrants = [
     new Tyrant("base", "Drellen", 6, 10, 1),
 ];
 const cards = {
-    "d1": [
-        new Encounter("base", "Special", "001"),
-    ],
-    "d2": [
-        new Encounter("base", "Special", "002"),
-    ],
-    "d3": [
-        new Encounter("base", "Special", "003"),
-    ],
-    "base": buildGeneralCards("base", 30),
-    "base-solo": buildGeneralCards("base", 12, true),
-    "40d": buildGeneralCards("40d", 24),
-    "40d-solo": buildGeneralCards("40d", 12, true),
+    "base-d1": [new Encounter("base", "Special", "001")],
+    "aot-d1": buildCards("aot", "Special", 7),
+    "base-d2": [new Encounter("base", "Special", "002")],
+    "aot-d2": buildCards("aot", "Special", 7, 8),
+    "base-d3": [new Encounter("base", "Special", "003")],
+    "aot-d3": buildCards("aot", "Special", 7, 15),
+    "base": buildCards("base", "General", 30),
+    "base-solo": buildCards("base", "Solo", 12),
+    "40d": buildCards("40d", "General", 24),
+    "40d-solo": buildCards("40d", "Solo", 12),
     "40d-nom": [new Encounter("40d", "Nom", "1/1")],
     "40d-mulmesh": [new Encounter("40d", "Mulmesh", "1/1")],
     "40d-drellen": [new Encounter("40d", "Drellen", "1/1")],
@@ -89,14 +86,17 @@ const cards = {
 class Setup {
     Tyrant = null;
     Encounters = null;
+    Error = null;
 
-    constructor(tyrant, encounters) {
+    constructor(tyrant, encounters, error) {
         this.Tyrant = tyrant;
         this.Encounters = encounters;
+        this.Error = error;
     }
 
     static Randomize(owned, solo, tyrantID = null) {
         function randomEl(arr) {
+            //TODO: remove
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
@@ -125,25 +125,39 @@ class Setup {
             tyrant = tyrants.find(t => t.ID == tyrantID);
         // build pool of cards
         let tyrantPool = tyrant.Cards;
-        let pool = [];
+        let day13Pool = [];
+        let encounterPool = [];
         let suffix = solo ? "-solo" : "";
         for (let set of Object.keys(owned)) {
-            // add all encounters from this set (if owned) into the encounter pool
-            let s = `${set}${suffix}`;
-            if (owned[set] && cards.hasOwnProperty(s)) {
-                pool.push(...cards[s]);
+            if (!owned[set])
+                continue;
+            // add all day 1-3 cards from this set into the pool
+            for (let i = 0; i < 3; i++) {
+                day13Pool.push([]);
+                let d = `${set}-d${i + 1}`;
+                if (cards.hasOwnProperty(d)) {
+                    day13Pool[i].push(...cards[d]);
+                }
             }
-            // add all tyrant encounter for this tyrant from this set (if owned) to the pool
+
+            // add all encounters from this set into the encounter pool
+            let s = `${set}${suffix}`;
+            if (cards.hasOwnProperty(s)) {
+                encounterPool.push(...cards[s]);
+            }
+            // add all tyrant encounter for this tyrant from this set to the pool
             let t = `${set}-${tyrant.ID}`;
-            if (owned[set] && cards.hasOwnProperty(t)) {
+            if (cards.hasOwnProperty(t)) {
                 tyrantPool.push(...cards[t]);
             }
         }
         // add 3 random cards for the first days
         let first = [];
         for (let i = 0; i < 3; i++) {
-            let c = cards[`d${i + 1}`];
-            let card = randomEl(c);
+            let pool = day13Pool[i];
+            if (pool.length == 0)
+                return new Setup(null, null, "Not enough day 1-3 encounters (needs at least 1 per day).");
+            let card = randomEl(pool);
             first.push(card);
         }
 
@@ -151,7 +165,7 @@ class Setup {
         let amount = tyrant.Days - 3;
         let encounters = [];
         for (let i = 0; i < amount; i++) {
-            let card = randomEl(pool);
+            let card = randomEl(encounterPool);
             encounters.push(card);
         }
         // add all available tyrant encounters for this tyrant

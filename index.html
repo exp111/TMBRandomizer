@@ -17,6 +17,10 @@
         <input type="checkbox" id="40d"/>
         <label for="40d">40 Days</label>
     </div>
+    <div>
+        <input type="checkbox" id="aot"/>
+        <label for="aot">Age of Tyranny</label>
+    </div>
 </div>
 <div id="options">
     <div>
@@ -79,16 +83,20 @@
         if (!selectedTyrant)
             selectedTyrant = null;
         let setup = Setup.Randomize(owned, solo, selectedTyrant);
-        let tyrantImg = document.getElementById("result-tyrant-image");
-        tyrantImg.src = `assets/img/tyrants/${setup.Tyrant.ID}.png`;
-        let tyrant = document.getElementById("result-tyrant-name");
-        tyrant.textContent = setup.Tyrant.Name;
-        let encounters = document.getElementById("result-encounters");
-        encounters.innerHTML = "";
-        for (let e of setup.Encounters) {
-            let el = document.createElement("div");
-            el.textContent = e.toString();
-            encounters.appendChild(el);
+        if (setup.Error) {
+            alert(`Error while creating encounters: ${setup.Error}`);
+        } else {
+            let tyrantImg = document.getElementById("result-tyrant-image");
+            tyrantImg.src = `assets/img/tyrants/${setup.Tyrant.ID}.png`;
+            let tyrant = document.getElementById("result-tyrant-name");
+            tyrant.textContent = setup.Tyrant.Name;
+            let encounters = document.getElementById("result-encounters");
+            encounters.innerHTML = "";
+            for (let e of setup.Encounters) {
+                let el = document.createElement("div");
+                el.textContent = e.toString();
+                encounters.appendChild(el);
+            }
         }
     }
 </script>
