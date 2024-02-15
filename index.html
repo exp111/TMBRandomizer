@@ -9,21 +9,37 @@
 </head>
 <body>
 <div id="addons">
-    <div>
-        <input type="checkbox" id="base" checked="checked"/>
-        <label for="base">Base</label>
+    <div id="extensions">
+        <div>
+            <input type="checkbox" id="base" checked="checked"/>
+            <label for="base">Base</label>
+        </div>
+        <div>
+            <input type="checkbox" id="40d"/>
+            <label for="40d">40 Days</label>
+        </div>
+        <div>
+            <input type="checkbox" id="aot"/>
+            <label for="aot">Age of Tyranny</label>
+        </div>
+        <div>
+            <input type="checkbox" id="rot"/>
+            <label for="rot">Rage of Tyranny</label>
+        </div>
     </div>
-    <div>
-        <input type="checkbox" id="40d"/>
-        <label for="40d">40 Days</label>
-    </div>
-    <div>
-        <input type="checkbox" id="aot"/>
-        <label for="aot">Age of Tyranny</label>
-    </div>
-    <div>
-        <input type="checkbox" id="rot"/>
-        <label for="rot">Rage of Tyranny</label>
+    <div id="gearlocs">
+        <div>
+            <input type="checkbox" id="ghillie"/>
+            <label for="ghillie">Ghillie</label>
+        </div>
+        <div>
+            <input type="checkbox" id="nugget"/>
+            <label for="nugget">Nugget</label>
+        </div>
+        <div>
+            <input type="checkbox" id="tink"/>
+            <label for="tink">Tink</label>
+        </div>
     </div>
 </div>
 <div id="options">
@@ -46,7 +62,7 @@
 <div id="results">
     <div id="gearloc">
         <div class="header">Gearlocs</div>
-        <div id="gearlocs"></div>
+        <div id="results-gearlocs"></div>
     </div>
     <div id="tyrant">
         <div class="header">Tyrant</div>
@@ -71,14 +87,16 @@
 
     // hook
     let addons = document.getElementById("addons");
-    for (let addon of addons.children) {
-        let check = addon.getElementsByTagName("input");
-        if (check.length == 0) {
-            continue;
+    for (let section of addons.children) {
+        for (let addon of section.children) {
+            let check = addon.getElementsByTagName("input");
+            if (check.length == 0) {
+                continue;
+            }
+            check = check[0];
+            check.onchange = () => setOwned(check.id, check.checked);
+            check.onchange(); // sync dict with dom
         }
-        check = check[0];
-        check.onchange = () => setOwned(check.id, check.checked);
-        check.onchange(); // sync dict with dom
     }
     // sync tyrants with dropdown
     let tyr = document.getElementById("force-tyrant");
@@ -100,7 +118,7 @@
             alert(`Error while creating encounters: ${setup.Error}`);
         } else {
             // Gearlocs
-            let gearlocs = document.getElementById("gearlocs");
+            let gearlocs = document.getElementById("results-gearlocs");
             gearlocs.innerHTML = ""; // clear
             for (let gearloc of setup.Gearlocs) {
                 let div = document.createElement("div");

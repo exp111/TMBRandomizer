@@ -33,6 +33,7 @@ class Gearloc {
         this.Name = name;
     }
 }
+
 class Tyrant {
     SetID = "";
     ID = "";
@@ -71,10 +72,13 @@ function buildCards(setID, type, num, start = 1) {
 
 //TODO: move into class/scope
 const gearlocs = [
-  new Gearloc("base", "Patches"),
-  new Gearloc("base", "Picket"),
-  new Gearloc("base", "Boomer"),
-  new Gearloc("base", "Tantrum"),
+    new Gearloc("base", "Patches"),
+    new Gearloc("base", "Picket"),
+    new Gearloc("base", "Boomer"),
+    new Gearloc("base", "Tantrum"),
+    new Gearloc("ghillie", "Ghillie"),
+    new Gearloc("nugget", "Nugget"),
+    new Gearloc("tink", "Tink"),
 ];
 const tyrants = [
     //TODO: aos
@@ -122,6 +126,7 @@ class Setup {
         function randomEl(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
+
         function takeRandomEl(arr) {
             let index = Math.floor(Math.random() * arr.length);
             return arr.splice(index, 1)[0];
@@ -144,22 +149,22 @@ class Setup {
             }
         }
 
-        //TODO: get gearloc/tyrant pool + check for empty arrs
         // get the gearlocs
-        let gearlocPool = [...gearlocs];
+        let gearlocPool = gearlocs.filter(g => owned[g.SetID]);
         let selectedGearlocs = [];
         if (gearlocPool.length < players)
             return new Setup(null, null, null, `Too few gearlocs for this player count (${players}).`);
         for (let i = 0; i < players; i++)
             selectedGearlocs.push(takeRandomEl(gearlocPool)); // fetch a random gearloc
         // get the tyrant
+        let tyrantPool = tyrants.filter(t => owned[t.SetID]);
         let tyrant = null;
         if (tyrantID == null) // fetch a random tyrant
-            tyrant = randomEl(tyrants);
+            tyrant = randomEl(tyrantPool);
         else
-            tyrant = tyrants.find(t => t.ID == tyrantID);
+            tyrant = tyrantPool.find(t => t.ID == tyrantID);
         // build pool of cards
-        let tyrantPool = [...tyrant.Cards];
+        let tyrantCardPool = [...tyrant.Cards];
         let day13Pool = [];
         let encounterPool = [];
         let suffix = solo ? "-solo" : "";
@@ -183,7 +188,7 @@ class Setup {
             // add all tyrant encounter for this tyrant from this set to the pool
             let t = `${set}-${tyrant.ID}`;
             if (cards.hasOwnProperty(t)) {
-                tyrantPool.push(...cards[t]);
+                tyrantCardPool.push(...cards[t]);
             }
         }
         // add 3 random cards for the first days
@@ -207,7 +212,7 @@ class Setup {
             encounters.push(card);
         }
         // add all available tyrant encounters for this tyrant
-        encounters.push(...tyrantPool);
+        encounters.push(...tyrantCardPool);
         // shuffle the encounters
         shuffleArr(encounters);
         // add the cards for day 1-3 to the front
