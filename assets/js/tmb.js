@@ -1,5 +1,5 @@
 const names = {
-    "base": "Base Game",
+    "base": "Base Set",
     "40d": "40 Days",
     "aot": "Age of Tyranny",
     //TODO: more: RoT, AoS, UT, UB, 40w, 40c
@@ -81,6 +81,9 @@ const cards = {
     "base-solo": buildGeneralCards("base", 12, true),
     "40d": buildGeneralCards("40d", 24),
     "40d-solo": buildGeneralCards("40d", 12, true),
+    "40d-nom": [new Encounter("40d", "Nom", "1/1")],
+    "40d-mulmesh": [new Encounter("40d", "Mulmesh", "1/1")],
+    "40d-drellen": [new Encounter("40d", "Drellen", "1/1")],
 };
 
 class Setup {
@@ -96,6 +99,7 @@ class Setup {
         function randomEl(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
+
         function shuffleArr(array) {
             let currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -113,7 +117,25 @@ class Setup {
             }
         }
 
+        // fetch a random tyrant
         let tyrant = randomEl(tyrants);
+        // build pool of cards
+        let tyrantPool = tyrant.Cards;
+        let pool = [];
+        let suffix = solo ? "-solo" : "";
+        for (let set of Object.keys(owned)) {
+            // add all encounters from this set (if owned) into the encounter pool
+            let s = `${set}${suffix}`;
+            if (owned[set] && cards.hasOwnProperty(s)) {
+                pool.push(...cards[s]);
+            }
+            // add all tyrant encounter for this tyrant from this set (if owned) to the pool
+            let t = `${set}-${tyrant.ID}`;
+            if (owned[set] && cards.hasOwnProperty(t)) {
+                tyrantPool.push(...cards[t]);
+            }
+        }
+        // add 3 random cards for the first days
         let first = [];
         for (let i = 0; i < 3; i++) {
             let c = cards[`d${i + 1}`];
@@ -121,24 +143,18 @@ class Setup {
             first.push(card);
         }
 
+        // add all other encounters (days - 3)
         let amount = tyrant.Days - 3;
-        let pool = [];
-        let suffix = solo ? "-solo" : "";
-        for (let set of Object.keys(owned)) {
-            let s = `${set}${suffix}`;
-            if (owned[set] && cards.hasOwnProperty(s)) {
-                pool.push(...cards[s]);
-            }
-        }
         let encounters = [];
         for (let i = 0; i < amount; i++) {
             let card = randomEl(pool);
             encounters.push(card);
         }
-        for (let card of tyrant.Cards) {
-            encounters.push(card);
-        }
+        // add all available tyrant encounters for this tyrant
+        encounters.push(...tyrantPool);
+        // shuffle the encounters
         shuffleArr(encounters);
+        // add the cards for day 1-3 to the front
         encounters.unshift(...first);
         return new Setup(tyrant, encounters);
     }
