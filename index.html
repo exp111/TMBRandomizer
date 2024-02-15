@@ -78,9 +78,19 @@
 </body>
 <script src="assets/js/tmb.js"></script>
 <script>
-    //TODO: sync gearloc/tyrants from js to DOM
     const owned = {};
 
+    function refresh() {
+        let available = getAvailableTyrants(owned);
+        let tyrants = document.getElementById("force-tyrant");
+        for(let i = tyrants.options.length - 1; i > 0; i--) {
+            tyrants.remove(i);
+        }
+        for (let tyrant of available) {
+            let opt = new Option(tyrant.Name, tyrant.ID);
+            tyrants.appendChild(opt);
+        }
+    }
     function setOwned(id, val) {
         owned[id] = val;
     }
@@ -94,15 +104,12 @@
                 continue;
             }
             check = check[0];
-            check.onchange = () => setOwned(check.id, check.checked);
+            check.onchange = () => {
+                setOwned(check.id, check.checked);
+                refresh();
+            }
             check.onchange(); // sync dict with dom
         }
-    }
-    // sync tyrants with dropdown
-    let tyr = document.getElementById("force-tyrant");
-    for (let tyrant of tyrants) {
-        let opt = new Option(tyrant.Name, tyrant.ID);
-        tyr.appendChild(opt);
     }
 
     let randomButton = document.getElementById("randomize");

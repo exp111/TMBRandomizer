@@ -109,6 +109,13 @@ const cards = {
     "40d-drellen": [new Encounter("40d", "Drellen", "1/1")],
 };
 
+function getAvailableGearlocs(owned) {
+    return gearlocs.filter(g => owned[g.SetID]);
+}
+function getAvailableTyrants(owned) {
+    return tyrants.filter(t => owned[t.SetID]);
+}
+
 class Setup {
     Gearlocs = null;
     Tyrant = null;
@@ -150,14 +157,14 @@ class Setup {
         }
 
         // get the gearlocs
-        let gearlocPool = gearlocs.filter(g => owned[g.SetID]);
+        let gearlocPool = getAvailableGearlocs(owned);
         let selectedGearlocs = [];
         if (gearlocPool.length < players)
             return new Setup(null, null, null, `Too few gearlocs for this player count (${players}).`);
         for (let i = 0; i < players; i++)
             selectedGearlocs.push(takeRandomEl(gearlocPool)); // fetch a random gearloc
         // get the tyrant
-        let tyrantPool = tyrants.filter(t => owned[t.SetID]);
+        let tyrantPool = getAvailableTyrants(owned);
         let tyrant = null;
         if (tyrantID == null) // fetch a random tyrant
             tyrant = randomEl(tyrantPool);
