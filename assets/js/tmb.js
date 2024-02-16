@@ -3,11 +3,12 @@ const names = {
     "40d": "40 Days",
     "aot": "Age of Tyranny",
     "rot": "Rage of Tyranny",
+    "aos": "Automaton of Shale"
     //TODO: more: AoS, UT, UB, 40w, 40c
 }
 
 const gameplayAddons = [
-    "base", "40d", "aot", "rot"
+    "base", "40d", "aot", "rot", "aos"
 ];
 const gearlocAddons = [
     "ghillie", "nugget", "tink", "gasket", "dart", "carcass", "polaris", "static", "lab-rats", "riffle"
@@ -103,24 +104,35 @@ const tyrants = [
     new Tyrant("base", "The Goblin King", 8, 12, 2),
     new Tyrant("base", "Gendricks", 8, 10, 2),
     new Tyrant("base", "Drellen", 6, 10, 1),
+    new Tyrant("aos", "Automaton of Shale", 9, 11, 1),
 ];
 const cards = {
+    // Base
     "base-d1": [new Encounter("base", "Special", "001")],
-    "aot-d1": buildCards("aot", "Special", 7),
-    "rot-d1": buildCards("rot", "Special", 4),
     "base-d2": [new Encounter("base", "Special", "002")],
-    "aot-d2": buildCards("aot", "Special", 7, 8),
-    "rot-d2": buildCards("rot", "Special", 4, 9),
     "base-d3": [new Encounter("base", "Special", "003")],
-    "aot-d3": buildCards("aot", "Special", 7, 15),
-    "rot-d3": buildCards("rot", "Special", 4, 17),
     "base": buildCards("base", "General", 30),
     "base-solo": buildCards("base", "Solo", 12),
+    // 40 Days
     "40d": buildCards("40d", "General", 24),
     "40d-solo": buildCards("40d", "Solo", 12),
     "40d-nom": [new Encounter("40d", "Nom", "1/1")],
     "40d-mulmesh": [new Encounter("40d", "Mulmesh", "1/1")],
     "40d-drellen": [new Encounter("40d", "Drellen", "1/1")],
+    // AoT
+    "aot-d1": buildCards("aot", "Special", 7),
+    "aot-d2": buildCards("aot", "Special", 7, 8),
+    "aot-d3": buildCards("aot", "Special", 7, 15),
+    // RoT
+    "rot-d1": buildCards("rot", "Special", 4),
+    "rot-d2": buildCards("rot", "Special", 4, 9),
+    "rot-d3": buildCards("rot", "Special", 4, 17),
+    // AoS
+    "aos": buildCards("aos", "General/Solo", 5),
+    "aos-solo": buildCards("aos", "General/Solo", 5),
+    "aos-d1": [new Encounter("aos", "Special", "001")],
+    "aos-d2": [new Encounter("aos", "Special", "002")],
+    "aos-d3": [new Encounter("aos", "Special", "003")],
 };
 
 function getAvailableGearlocs(owned) {
