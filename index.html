@@ -51,6 +51,8 @@
 <script src="assets/js/tmb.js"></script>
 <script>
     const owned = {};
+    // check if its a mobile device by checking if hover is supported
+    const isMobile = !window.matchMedia("(hover: hover)").matches;
 
     function createBox(id, text, checked) {
         let div = document.createElement("div");
@@ -65,20 +67,36 @@
         div.appendChild(label);
         return div;
     }
+
     let gameplayAdd = document.getElementById("addons-gameplay");
     for (let addon of gameplayAddons) {
         gameplayAdd.appendChild(createBox(addon, names[addon], addon == "base"));
     }
 
     let gearlocAdd = document.getElementById("addons-gearlocs");
-    for (let addon of gearlocAddons) {
-        gearlocAdd.appendChild(createBox(addon, gearlocs.find(g => g.ID == addon).Name, false));
+    if (isMobile) {
+        let select = document.createElement("select");
+        select.multiple = true;
+        select.onchange = () => {
+            for (let opt of select.options) {
+                setOwned(opt.value, opt.selected);
+            }
+            refresh();
+        }
+        for (let addon of gearlocAddons) {
+            select.appendChild(new Option(gearlocs.find(g => g.ID == addon).Name, addon));
+        }
+        gearlocAdd.appendChild(select);
+    } else {
+        for (let addon of gearlocAddons) {
+            gearlocAdd.appendChild(createBox(addon, gearlocs.find(g => g.ID == addon).Name, false));
+        }
     }
 
     function refresh() {
         let available = getAvailableTyrants(owned);
         let tyrants = document.getElementById("force-tyrant");
-        for(let i = tyrants.options.length - 1; i > 0; i--) {
+        for (let i = tyrants.options.length - 1; i > 0; i--) {
             tyrants.remove(i);
         }
         for (let tyrant of available) {
@@ -86,6 +104,7 @@
             tyrants.appendChild(opt);
         }
     }
+
     function setOwned(id, val) {
         owned[id] = val;
     }
