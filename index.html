@@ -75,7 +75,11 @@
 
     let gearlocAdd = document.getElementById("addons-gearlocs");
     if (isMobile) {
+        let label = document.createElement("label");
+        label.htmlFor = "gearlocSelection";
+        label.textContent = "Gearlocs:";
         let select = document.createElement("select");
+        select.id = "gearlocSelection";
         select.multiple = true;
         select.onchange = () => {
             for (let opt of select.options) {
@@ -86,6 +90,7 @@
         for (let addon of gearlocAddons) {
             select.appendChild(new Option(gearlocs.find(g => g.ID == addon).Name, addon));
         }
+        gearlocAdd.appendChild(label);
         gearlocAdd.appendChild(select);
     } else {
         for (let addon of gearlocAddons) {
