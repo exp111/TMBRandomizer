@@ -10,7 +10,7 @@ const gameplayAddons = [
     "base", "40d", "aot", "rot"
 ];
 const gearlocAddons = [
-    "ghillie", "nugget", "tink", "gasket", "dart", "carcass", "polaris", "static", "riffle"
+    "ghillie", "nugget", "tink", "gasket", "dart", "carcass", "polaris", "static", "lab-rats", "riffle"
 ];
 
 class Encounter {
@@ -91,6 +91,7 @@ const gearlocs = [
     new Gearloc("carcass", "Carcass"),
     new Gearloc("polaris", "Polaris"),
     new Gearloc("static", "Static"),
+    new Gearloc("lab-rats", "Lab Rats"),
     new Gearloc("riffle", "Riffle"),
 ];
 const tyrants = [
