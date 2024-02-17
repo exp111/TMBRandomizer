@@ -49,7 +49,7 @@ body {
     width: 40%;
 }
 #result-tyrant-image {
-    max-width: 80%;
+    max-width: 50%;
     margin: auto;
 }
 #result-tyrant-image:not([src]) {
