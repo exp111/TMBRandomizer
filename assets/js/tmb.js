@@ -57,7 +57,7 @@ class Tyrant {
 
     constructor(setID, name, progress, days, encounters) {
         this.SetID = setID;
-        this.ID = name.toLowerCase().replaceAll(" ", "-");
+        this.ID = name.toLowerCase().replaceAll(" ", "-").replaceAll("'", "").replaceAll("&","");
         this.Name = name;
         this.Progress = progress;
         this.Days = days;
