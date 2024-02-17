@@ -68,18 +68,12 @@
         return div;
     }
 
-    let gameplayAdd = document.getElementById("addons-gameplay");
-    for (let addon of gameplayAddons) {
-        gameplayAdd.appendChild(createBox(addon, names[addon], addon == "base"));
-    }
-
-    let gearlocAdd = document.getElementById("addons-gearlocs");
-    if (isMobile) {
+    function createSelect(parent, addons, id, text, func) {
         let label = document.createElement("label");
-        label.htmlFor = "gearlocSelection";
-        label.textContent = "Gearlocs:";
+        label.htmlFor = id;
+        label.textContent = text;
         let select = document.createElement("select");
-        select.id = "gearlocSelection";
+        select.id = id;
         select.multiple = true;
         select.onchange = () => {
             for (let opt of select.options) {
@@ -87,11 +81,29 @@
             }
             refresh();
         }
-        for (let addon of gearlocAddons) {
-            select.appendChild(new Option(gearlocs.find(g => g.ID == addon).Name, addon));
+        for (let addon of addons) {
+            select.appendChild(func(addon));
         }
-        gearlocAdd.appendChild(label);
-        gearlocAdd.appendChild(select);
+        parent.appendChild(label);
+        parent.appendChild(select);
+    }
+
+    let gameplayAdd = document.getElementById("addons-gameplay");
+    if (isMobile) {
+        createSelect(gameplayAdd, gameplayAddons, "gameplaySelection", "Sets:", (id) => {
+            let opt = new Option(names[id], id);
+            opt.selected = (id == "base");
+            return opt;
+        });
+    } else {
+        for (let addon of gameplayAddons) {
+            gameplayAdd.appendChild(createBox(addon, names[addon], addon == "base"));
+        }
+    }
+
+    let gearlocAdd = document.getElementById("addons-gearlocs");
+    if (isMobile) {
+        createSelect(gearlocAdd, gearlocAddons, "gearlocSelection", "Gearlocs:", (id) => new Option(gearlocs.find(g => g.ID == id).Name, id));
     } else {
         for (let addon of gearlocAddons) {
             gearlocAdd.appendChild(createBox(addon, gearlocs.find(g => g.ID == addon).Name, false));

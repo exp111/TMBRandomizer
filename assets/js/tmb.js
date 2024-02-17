@@ -3,12 +3,16 @@ const names = {
     "40d": "40 Days",
     "aot": "Age of Tyranny",
     "rot": "Rage of Tyranny",
-    "aos": "Automaton of Shale"
-    //TODO: more: AoS, UT, UB, 40w, 40c
+    "aos": "Automaton of Shale",
+    "sd": "Splice & Dice",
+    "ut": "Undertow",
+    "ub": "Unbreakable",
+    "40w": "40 Waves",
+    "40c": "40 Caves"
 }
 
 const gameplayAddons = [
-    "base", "40d", "aot", "rot", "aos"
+    "base", "40d", "aot", "rot", "aos", "sd", "ut", "ub", "40w", "40c"
 ];
 const gearlocAddons = [
     "ghillie", "nugget", "tink", "gasket", "dart", "carcass", "polaris", "static", "lab-rats", "riffle"
@@ -94,9 +98,12 @@ const gearlocs = [
     new Gearloc("static", "Static"),
     new Gearloc("lab-rats", "Lab Rats"),
     new Gearloc("riffle", "Riffle"),
+    new Gearloc("ut", "Duster"),
+    new Gearloc("ut", "Stanza"),
+    new Gearloc("ub", "Gale"),
+    new Gearloc("ub", "Figment"),
 ];
 const tyrants = [
-    //TODO: aos
     new Tyrant("base", "Duster", 10, 13, 3),
     new Tyrant("base", "Mulmesh", 6, 9, 1),
     new Tyrant("base", "Marrow", 10, 12, 2),
@@ -105,6 +112,21 @@ const tyrants = [
     new Tyrant("base", "Gendricks", 8, 10, 2),
     new Tyrant("base", "Drellen", 6, 10, 1),
     new Tyrant("aos", "Automaton of Shale", 9, 11, 1),
+    new Tyrant("sd", "Amanight", 6, 8, 5),
+    new Tyrant("sd", "Blobulous", 6, 8, 4),
+    new Tyrant("sd", "Leech", 5, 7, 3),
+    new Tyrant("sd", "Oxide", 7, 9, 4),
+    new Tyrant("sd", "Locgear", 8, 10, 5),
+    new Tyrant("ut", "Nobulous & The Abomination", 7, 10, 2),
+    new Tyrant("ut", "Barnacle", 5, 8, 2),
+    new Tyrant("ut", "Vol'Kesh", 7, 11, 2),
+    new Tyrant("ut", "The Goblin Queen", 6, 9, 1),
+    new Tyrant("ut", "Kollossum", 5, 7, 1),
+    new Tyrant("ub", "Domina & Domina's Scouts", 7, 10, 3),
+    new Tyrant("ub", "Rok & Rol", 5, 7, 2),
+    new Tyrant("ub", "Gavenkog", 8, 11, 2),
+    new Tyrant("ub", "Nexus", 9, 11, 4),
+    new Tyrant("ub", "Cinder", 6, 9, 2),
 ];
 const cards = {
     // Base
@@ -133,6 +155,25 @@ const cards = {
     "aos-d1": [new Encounter("aos", "Special", "001")],
     "aos-d2": [new Encounter("aos", "Special", "002")],
     "aos-d3": [new Encounter("aos", "Special", "003")],
+    // UT
+    "ut": buildCards("ut", "General", 29),
+    "ut-solo": buildCards("ut", "Solo", 12),
+    "ut-d1": buildCards("ut", "Special", 4),
+    "ut-d2": buildCards("ut", "Special", 4, 5),
+    // 40w
+    "40w": buildCards("40w", "General", 26),
+    "40w-solo": buildCards("40w", "Solo", 12),
+    "40w-the-goblin-queen": [new Encounter("40w", "The Goblin Queen", "1/1")],
+    "40w-kollossum": [new Encounter("40w", "Kollossum", "1/1")],
+    // UB
+    "ub": buildCards("ub", "General", 27),
+    "ub-solo": buildCards("ub", "Solo", 12),
+    "ub-d1": buildCards("ub", "Special", 8),
+    "ub-d2": buildCards("ub", "Special", 8, 9),
+    // 40c
+    "40c": buildCards("40c", "General", 24),
+    "40c-solo": buildCards("40c", "Solo", 12),
+    "40c-cinder": [new Encounter("40c", "Cinder", "1/1")],
 };
 
 function getAvailableGearlocs(owned) {
@@ -196,6 +237,7 @@ class Setup {
             tyrant = randomEl(tyrantPool);
         else
             tyrant = tyrantPool.find(t => t.ID == tyrantID);
+        let amountDays = (tyrant.SetID == "ut" || tyrant.SetID == "ub") ? 2 : 3;
         // build pool of cards
         let tyrantCardPool = [...tyrant.Cards];
         let day13Pool = [];
@@ -205,7 +247,7 @@ class Setup {
             if (!owned[set])
                 continue;
             // add all day 1-3 cards from this set into the pool
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < amountDays; i++) {
                 day13Pool.push([]);
                 let d = `${set}-d${i + 1}`;
                 if (cards.hasOwnProperty(d)) {
@@ -226,7 +268,7 @@ class Setup {
         }
         // add 3 random cards for the first days
         let first = [];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < amountDays; i++) {
             let pool = day13Pool[i];
             if (pool.length == 0)
                 return new Setup(null, null, null, "Not enough day 1-3 encounters (needs at least 1 per day).");
@@ -235,7 +277,7 @@ class Setup {
         }
 
         // add all other encounters (days - 3)
-        let amount = tyrant.Days - 3;
+        let amount = tyrant.Days - amountDays;
         let encounters = [];
         for (let i = 0; i < amount; i++) {
             if (encounterPool.length == 0) {
