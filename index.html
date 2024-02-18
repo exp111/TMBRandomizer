@@ -91,11 +91,7 @@
 
     let gameplayAdd = document.getElementById("addons-gameplay");
     if (isMobile) {
-        createSelect(gameplayAdd, gameplayAddons, "gameplaySelection", "Sets:", (id) => {
-            let opt = new Option(names[id], id);
-            opt.selected = (id == "base");
-            return opt;
-        });
+        createSelect(gameplayAdd, gameplayAddons, "gameplaySelection", "Sets:", (id) => new Option(names[id], id, false, (id == "base")));
     } else {
         for (let addon of gameplayAddons) {
             gameplayAdd.appendChild(createBox(addon, names[addon], addon == "base"));
@@ -103,11 +99,13 @@
     }
 
     let gearlocAdd = document.getElementById("addons-gearlocs");
+    let gearlocIDs = gearlocs.map(g => g.ID);
+    let baseGearlocs = ["picket", "tantrum", "boomer", "patches"];
     if (isMobile) {
-        createSelect(gearlocAdd, gearlocAddons, "gearlocSelection", "Gearlocs:", (id) => new Option(gearlocs.find(g => g.ID == id).Name, id));
+        createSelect(gearlocAdd, gearlocIDs, "gearlocSelection", "Gearlocs:", (id) => new Option(gearlocs.find(g => g.ID == id).Name, id, false, baseGearlocs.includes(id)));
     } else {
-        for (let addon of gearlocAddons) {
-            gearlocAdd.appendChild(createBox(addon, gearlocs.find(g => g.ID == addon).Name, false));
+        for (let addon of gearlocIDs) {
+            gearlocAdd.appendChild(createBox(addon, gearlocs.find(g => g.ID == addon).Name, baseGearlocs.includes(addon)));
         }
     }
 

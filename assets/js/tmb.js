@@ -14,9 +14,6 @@ const names = {
 const gameplayAddons = [
     "base", "40d", "aot", "rot", "aos", "sd", "ut", "ub", "40w", "40c"
 ];
-const gearlocAddons = [
-    "ghillie", "nugget", "tink", "gasket", "dart", "carcass", "polaris", "static", "lab-rats", "riffle"
-];
 
 class Encounter {
     SetID = "";
@@ -35,12 +32,10 @@ class Encounter {
 }
 
 class Gearloc {
-    SetID = "";
     ID = "";
     Name = "";
 
-    constructor(setID, name) {
-        this.SetID = setID;
+    constructor(name) {
         this.ID = name.toLowerCase().replaceAll(" ", "-");
         this.Name = name;
     }
@@ -84,24 +79,24 @@ function buildCards(setID, type, num, start = 1) {
 
 //TODO: move into class/scope
 const gearlocs = [
-    new Gearloc("base", "Patches"),
-    new Gearloc("base", "Picket"),
-    new Gearloc("base", "Boomer"),
-    new Gearloc("base", "Tantrum"),
-    new Gearloc("ghillie", "Ghillie"),
-    new Gearloc("nugget", "Nugget"),
-    new Gearloc("tink", "Tink"),
-    new Gearloc("gasket", "Gasket"),
-    new Gearloc("dart", "Dart"),
-    new Gearloc("carcass", "Carcass"),
-    new Gearloc("polaris", "Polaris"),
-    new Gearloc("static", "Static"),
-    new Gearloc("lab-rats", "Lab Rats"),
-    new Gearloc("riffle", "Riffle"),
-    new Gearloc("ut", "Duster"),
-    new Gearloc("ut", "Stanza"),
-    new Gearloc("ub", "Gale"),
-    new Gearloc("ub", "Figment"),
+    new Gearloc("Patches"),
+    new Gearloc("Picket"),
+    new Gearloc("Boomer"),
+    new Gearloc("Tantrum"),
+    new Gearloc("Ghillie"),
+    new Gearloc("Nugget"),
+    new Gearloc("Tink"),
+    new Gearloc("Gasket"),
+    new Gearloc("Dart"),
+    new Gearloc("Carcass"),
+    new Gearloc("Polaris"),
+    new Gearloc("Static"),
+    new Gearloc("Lab Rats"),
+    new Gearloc("Riffle"),
+    new Gearloc("Duster"),
+    new Gearloc("Stanza"),
+    new Gearloc("Gale"),
+    new Gearloc("Figment"),
 ];
 const tyrants = [
     new Tyrant("base", "Duster", 10, 13, 3),
@@ -177,7 +172,7 @@ const cards = {
 };
 
 function getAvailableGearlocs(owned) {
-    return gearlocs.filter(g => owned[g.SetID]);
+    return gearlocs.filter(g => owned[g.ID]);
 }
 function getAvailableTyrants(owned) {
     return tyrants.filter(t => owned[t.SetID]);
