@@ -191,7 +191,7 @@ class Setup {
         this.Error = error;
     }
 
-    static Randomize(owned, solo, players, tyrantID = null) {
+    static Randomize(owned, solo, players, allowedTyrants) {
         function randomEl(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
@@ -225,13 +225,11 @@ class Setup {
             return new Setup(null, null, null, `Too few gearlocs for this player count (${players}).`);
         for (let i = 0; i < players; i++)
             selectedGearlocs.push(takeRandomEl(gearlocPool)); // fetch a random gearloc
-        // get the tyrant
-        let tyrantPool = getAvailableTyrants(owned);
-        let tyrant = null;
-        if (tyrantID == null) // fetch a random tyrant
-            tyrant = randomEl(tyrantPool);
-        else
-            tyrant = tyrantPool.find(t => t.ID == tyrantID);
+        // get a random tyrant
+        let tyrantPool = getAvailableTyrants(owned).filter(t => allowedTyrants[t.ID]);
+        if (tyrantPool.length == 0)
+            return new Setup(null, null, null, `Not enough tyrants.`);
+        let tyrant = randomEl(tyrantPool);
         let amountDays = (tyrant.SetID == "ut" || tyrant.SetID == "ub") ? 2 : 3;
         // build pool of cards
         let tyrantCardPool = [...tyrant.Cards];

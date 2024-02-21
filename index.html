@@ -20,15 +20,12 @@
         <label for="solo">Solo</label>
     </div>
     <div>
-        <label for="force-tyrant">Tyrant:</label>
-        <select id="force-tyrant">
-            <option value="" selected>Random</option>
-        </select>
-    </div>
-    <div>
         <label for="num-players">Players:</label>
         <input id="num-players" type="number" min="1" max="4" value="1"/>
     </div>
+</div>
+<div id="tyrants">
+
 </div>
 <button id="randomize">Randomize</button>
 <div id="results">
@@ -51,6 +48,11 @@
 <script src="assets/js/tmb.js"></script>
 <script>
     const owned = {};
+    const allowedTyrants = {};
+    // fill allowedtyrants
+    for (let tyrant of tyrants) {
+        allowedTyrants[tyrant.ID] = true;
+    }
     // check if its a mobile device by checking if hover is supported
     const isMobile = !window.matchMedia("(hover: hover)").matches;
 
@@ -68,33 +70,35 @@
         return div;
     }
 
-    function createSelect(parent, addons, id, text, func) {
+    function createSelect(parent, addons, id, text, func, evFunc) {
         let label = document.createElement("label");
         label.htmlFor = id;
         label.textContent = text;
         let select = document.createElement("select");
         select.id = id;
         select.multiple = true;
-        select.onchange = () => {
-            for (let opt of select.options) {
-                setOwned(opt.value, opt.selected);
-            }
-            refresh();
-        }
+        select.addEventListener("change", evFunc);
         for (let addon of addons) {
             select.appendChild(func(addon));
         }
         parent.appendChild(label);
         parent.appendChild(select);
-        select.onchange();
+        select.dispatchEvent(new Event('change'));
     }
 
+    function ownedChangeEv(ev) {
+        let select = ev.target;
+        for (let opt of select.options) {
+            setAddonOwned(opt.value.split("_")[1], opt.selected);
+        }
+        refresh();
+    }
     let gameplayAdd = document.getElementById("addons-gameplay");
     if (isMobile) {
-        createSelect(gameplayAdd, gameplayAddons, "gameplaySelection", "Sets:", (id) => new Option(names[id], id, false, (id == "base")));
+        createSelect(gameplayAdd, gameplayAddons, "gameplaySelection", "Sets:", (id) => new Option(names[id], `play_${id}`, false, (id == "base")), ownedChangeEv);
     } else {
         for (let addon of gameplayAddons) {
-            gameplayAdd.appendChild(createBox(addon, names[addon], addon == "base"));
+            gameplayAdd.appendChild(createBox(`play_${addon}`, names[addon], addon == "base"));
         }
     }
 
@@ -102,27 +106,42 @@
     let gearlocIDs = gearlocs.map(g => g.ID);
     let baseGearlocs = ["picket", "tantrum", "boomer", "patches"];
     if (isMobile) {
-        createSelect(gearlocAdd, gearlocIDs, "gearlocSelection", "Gearlocs:", (id) => new Option(gearlocs.find(g => g.ID == id).Name, id, false, baseGearlocs.includes(id)));
+        createSelect(gearlocAdd, gearlocIDs, "gearlocSelection", "Gearlocs:", (id) => new Option(gearlocs.find(g => g.ID == id).Name, `gearloc_${id}`, false, baseGearlocs.includes(id)), ownedChangeEv);
     } else {
         for (let addon of gearlocIDs) {
-            gearlocAdd.appendChild(createBox(addon, gearlocs.find(g => g.ID == addon).Name, baseGearlocs.includes(addon)));
+            gearlocAdd.appendChild(createBox(`gearloc_${addon}`, gearlocs.find(g => g.ID == addon).Name, baseGearlocs.includes(addon)));
+        }
+    }
+
+    function tyrantChangeEv(ev) {
+        let select = ev.target;
+        for (let opt of select.options) {
+            setTyrantAllowed(opt.value.split("_")[1], opt.selected);
         }
     }
 
     function refresh() {
         let available = getAvailableTyrants(owned);
-        let tyrants = document.getElementById("force-tyrant");
-        for (let i = tyrants.options.length - 1; i > 0; i--) {
-            tyrants.remove(i);
-        }
-        for (let tyrant of available) {
-            let opt = new Option(tyrant.Name, tyrant.ID);
-            tyrants.appendChild(opt);
+        let div = document.getElementById("tyrants");
+        div.innerHTML = "";
+        if (isMobile) {
+            createSelect(div, available.map(t => t.ID), "tyrantSelection", "Allowed Tyrants:", (id) => new Option(tyrants.find(t => t.ID == id).Name, `tyrant_${id}`, false, allowedTyrants[id]), tyrantChangeEv);
+        } else {
+            for (let tyrant of available) {
+                let box = createBox(`tyrant_${tyrant.ID}`, tyrant.Name, allowedTyrants[tyrant.ID]);
+                box.onchange = () => {
+                    setTyrantAllowed(tyrant.ID, box.getElementsByTagName("input")[0].checked);
+                }
+                div.appendChild(box);
+            }
         }
     }
 
-    function setOwned(id, val) {
+    function setAddonOwned(id, val) {
         owned[id] = val;
+    }
+    function setTyrantAllowed(id, val) {
+        allowedTyrants[id] = val;
     }
 
     // hook
@@ -135,7 +154,7 @@
             }
             check = check[0];
             check.onchange = () => {
-                setOwned(check.id, check.checked);
+                setAddonOwned(check.id.split("_")[1], check.checked);
                 refresh();
             }
             check.onchange(); // sync dict with dom
@@ -146,11 +165,7 @@
     randomButton.onclick = () => {
         let solo = document.getElementById("solo").checked;
         let numPlayers = Math.max(Math.min(document.getElementById("num-players").value, 4), 1);
-        let tyr = document.getElementById("force-tyrant");
-        let selectedTyrant = tyr.selectedOptions.length > 0 ? tyr.selectedOptions[0].value : null;
-        if (!selectedTyrant)
-            selectedTyrant = null;
-        let setup = Setup.Randomize(owned, solo, numPlayers, selectedTyrant);
+        let setup = Setup.Randomize(owned, solo, numPlayers, allowedTyrants);
         if (setup.Error) {
             alert(`Error while creating encounters: ${setup.Error}`);
         } else {
