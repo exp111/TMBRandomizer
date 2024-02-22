@@ -142,23 +142,6 @@
         allowedTyrants[id] = val;
     }
 
-    // hook
-    let addons = document.getElementById("addons");
-    for (let section of addons.children) {
-        for (let addon of section.children) {
-            let check = addon.getElementsByTagName("input");
-            if (check.length == 0) {
-                continue;
-            }
-            check = check[0];
-            check.onchange = () => {
-                setAddonOwned(check.id.split("_")[1], check.checked);
-                refresh();
-            }
-            check.onchange(); // sync dict with dom
-        }
-    }
-
     let randomButton = document.getElementById("randomize");
     randomButton.onclick = () => {
         let solo = document.getElementById("solo").checked;
